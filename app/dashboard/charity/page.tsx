@@ -128,12 +128,28 @@ export default function CharityPage() {
   };
 
   return (
-    <section className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-semibold">Charity Impact</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Tune your contribution and maximize meaningful impact.
-        </p>
+    <section className="space-y-6">
+      <header className="relative overflow-hidden rounded-2xl border border-border/70 bg-linear-to-r from-primary/10 via-background to-chart-2/10 p-6 shadow-sm">
+        <div
+          className="absolute -right-12 -top-14 h-40 w-40 rounded-full bg-primary/10 blur-2xl"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute -bottom-16 left-1/4 h-40 w-40 rounded-full bg-chart-2/10 blur-2xl"
+          aria-hidden="true"
+        />
+        <div className="relative z-10">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Dashboard
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">
+            Charity Impact
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Tune your contribution and maximize meaningful impact for your
+            selected cause.
+          </p>
+        </div>
       </header>
 
       {errorMessage ? (
@@ -147,15 +163,17 @@ export default function CharityPage() {
         </div>
       ) : null}
 
-      <CharityImpactCard
-        charityName={charity?.name ?? null}
-        charityDescription={charity?.description ?? null}
-        charityImageUrl={charity?.image_url ?? null}
-        contributionPercent={contributionPercent}
-        isSaving={isSaving}
-        onContributionChange={setContributionPercent}
-        onSave={handleSave}
-      />
+      <div className="rounded-2xl border border-border/70 bg-card/70 p-3 shadow-sm sm:p-4">
+        <CharityImpactCard
+          charityName={charity?.name ?? null}
+          charityDescription={charity?.description ?? null}
+          charityImageUrl={charity?.image_url ?? null}
+          contributionPercent={contributionPercent}
+          isSaving={isSaving}
+          onContributionChange={setContributionPercent}
+          onSave={handleSave}
+        />
+      </div>
     </section>
   );
 }

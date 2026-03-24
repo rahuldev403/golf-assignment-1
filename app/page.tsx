@@ -35,7 +35,7 @@ const steps = [
     title: "Subscribe",
     description:
       "Choose your plan and instantly unlock a purpose-driven experience built for consistency and impact.",
-    icon: "/icons/subscribe.png",
+    icon: "/icons/subscribe1.png",
   },
   {
     title: "Enter Scores",
@@ -47,7 +47,7 @@ const steps = [
     title: "Win & Give Back",
     description:
       "Compete for rewards while a share of every subscription supports vetted charities you care about.",
-    icon: "/icons/give-back.png",
+    icon: "/icons/give-back1.png",
   },
 ];
 

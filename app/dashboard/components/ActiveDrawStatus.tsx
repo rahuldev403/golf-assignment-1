@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { AlertTriangle, CheckCircle2, Lock } from "lucide-react";
 
 type ActiveDrawStatusProps = {
@@ -78,6 +79,16 @@ export default function ActiveDrawStatus({
           <p className="mt-1 text-4xl font-black tracking-tight text-primary sm:text-5xl">
             {formatCurrency(currentJackpot)}
           </p>
+        </div>
+
+        <div className="flex h-20 w-24 items-center justify-center overflow-hidden rounded-lg border border-border/50 bg-background/50 p-1.5">
+          <Image
+            src="/draw1.png"
+            alt="Upcoming monthly draw"
+            width={120}
+            height={80}
+            className="h-20 w-24 object-contain"
+          />
         </div>
       </div>
 

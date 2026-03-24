@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import { createClient as createSupabaseClient } from "../../utils/supabase/client";
-import ThemeToggle from "../components/ThemeToggle";
 
 type AdminLayoutProps = {
   children: ReactNode;
@@ -69,7 +68,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         <div className="border-t border-sidebar-border p-3 space-y-2">
-          <ThemeToggle className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-sm font-medium text-sidebar-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
           <button
             type="button"
             onClick={handleLogout}

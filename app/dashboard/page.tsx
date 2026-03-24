@@ -501,7 +501,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 text-foreground">
       {checkoutToastMessage ? (
-        <div className="fixed right-4 bottom-4 z-50 max-w-sm rounded-lg border border-chart-3/50 bg-card px-4 py-3 text-sm text-foreground shadow-xl">
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-xl border border-chart-3/40 bg-card/95 px-4 py-3 text-sm text-foreground shadow-xl backdrop-blur">
           <p className="font-semibold text-chart-3">Billing Success</p>
           <p className="mt-1 text-muted-foreground">{checkoutToastMessage}</p>
         </div>
@@ -520,26 +520,38 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-xl border border-primary/30 bg-linear-to-br from-primary/5 via-primary/2 to-transparent p-8 shadow-sm"
+        className="relative overflow-hidden rounded-2xl border border-border/70 bg-linear-to-r from-primary/10 via-background to-chart-2/10 p-6 shadow-sm sm:p-8"
       >
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-15">
           <Image
             src="/illustration.png"
             alt="Golf Impact illustration"
             fill
+            loading="eager"
             className="object-cover"
           />
         </div>
+        <div
+          className="absolute -right-12 -top-14 h-40 w-40 rounded-full bg-primary/15 blur-2xl"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute -bottom-16 left-1/4 h-40 w-40 rounded-full bg-chart-2/10 blur-2xl"
+          aria-hidden="true"
+        />
         <div className="relative z-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-start">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             <Image
-              src="/logo.png"
+              src="/logoV1.png"
               alt="Golf Impact illustration"
               width={100}
               height={100}
-              className="object-contain rounded-2xl"
+              className="h-auto w-auto rounded-2xl object-contain"
             />
             <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Dashboard Overview
+              </p>
               <h1 className="text-2xl font-bold sm:text-3xl">
                 Your Golf Impact Hub
               </h1>
@@ -551,45 +563,71 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      <ActiveDrawStatus
-        isSubscribed={subscription?.status === "active"}
-        scoreCount={scores.length}
-        currentJackpot={currentJackpot}
-      />
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm">
+          <ActiveDrawStatus
+            isSubscribed={subscription?.status === "active"}
+            scoreCount={scores.length}
+            currentJackpot={currentJackpot}
+          />
+        </div>
 
-      <section className="rounded-xl border border-primary/30 bg-primary/10 p-6 shadow-sm">
-        {latestDraw ? (
-          <>
-            <h2 className="text-xl font-semibold">Latest Draw Results</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Draw Date: {new Date(latestDraw.draw_date).toLocaleDateString()}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Total Prize Pool: $
-              {Number(latestDraw.total_prize_pool ?? 0).toFixed(2)}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {(latestDraw.winning_numbers ?? []).map(
-                (number: number, index: number) => (
-                  <span
-                    key={`${number}-${index}`}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground"
-                  >
-                    {number}
-                  </span>
-                ),
-              )}
+        <section className="rounded-2xl border border-primary/70 bg-card p-6 shadow-[0_0_38px_-10px_hsl(var(--primary))]">
+          {latestDraw ? (
+            <>
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <h2 className="text-xl font-semibold">Latest Draw Results</h2>
+                <div className="flex h-20 w-24 items-center justify-center overflow-hidden rounded-lg border border-border/50 bg-background/50 p-1.5">
+                  <Image
+                    src="/result.png"
+                    alt="Latest draw results"
+                    width={120}
+                    height={80}
+                    className="h-20 w-24 object-contain"
+                  />
+                </div>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Draw Date: {new Date(latestDraw.draw_date).toLocaleDateString()}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Total Prize Pool: $
+                {Number(latestDraw.total_prize_pool ?? 0).toFixed(2)}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {(latestDraw.winning_numbers ?? []).map(
+                  (number: number, index: number) => (
+                    <span
+                      key={`${number}-${index}`}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-primary/90 font-bold text-primary-foreground"
+                    >
+                      {number}
+                    </span>
+                  ),
+                )}
+              </div>
+            </>
+          ) : (
+            <div>
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <h2 className="text-xl font-semibold">Latest Draw Results</h2>
+                <div className="flex h-20 w-24 items-center justify-center overflow-hidden rounded-lg border border-border/50 bg-background/50 p-1.5">
+                  <Image
+                    src="/result.png"
+                    alt="Latest draw results"
+                    width={120}
+                    height={80}
+                    className="h-20 w-24 object-contain"
+                  />
+                </div>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Waiting for the next official draw to be published. Submit your
+                scores now!
+              </p>
             </div>
-          </>
-        ) : (
-          <div>
-            <h2 className="text-xl font-semibold">Latest Draw Results</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Waiting for the next official draw to be published. Submit your
-              scores now!
-            </p>
-          </div>
-        )}
+          )}
+        </section>
       </section>
 
       {errorMessage ? (
@@ -605,7 +643,7 @@ export default function DashboardPage() {
       ) : null}
 
       {isLoading ? (
-        <div className="rounded-xl border border-border/50 bg-card p-6 text-muted-foreground shadow-sm">
+        <div className="rounded-2xl border border-border/60 bg-card p-6 text-muted-foreground shadow-sm">
           Loading dashboard...
         </div>
       ) : (
@@ -615,7 +653,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25 }}
-              className="rounded-xl border border-border/50 bg-card p-6 shadow-sm"
+              className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm"
             >
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Subscription Status
@@ -641,7 +679,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="rounded-xl border border-border/50 bg-card p-6 shadow-sm"
+              className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm"
             >
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Quick Actions
@@ -649,15 +687,21 @@ export default function DashboardPage() {
               <div className="relative z-10 mt-4 grid grid-cols-1 gap-2">
                 <Link
                   href="/dashboard/scores"
-                  className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
                 >
                   Enter Scores
                 </Link>
                 <Link
                   href="/dashboard/charity"
-                  className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:border-primary/35 hover:bg-muted"
                 >
                   Charity Impact
+                </Link>
+                <Link
+                  href="/dashboard/billing"
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:border-primary/35 hover:bg-muted"
+                >
+                  Billing & Plan
                 </Link>
               </div>
             </motion.article>
@@ -666,7 +710,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
-              className="rounded-xl border border-border/50 bg-card p-6 shadow-sm"
+              className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm"
             >
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Total Winnings
@@ -684,7 +728,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
-            className="rounded-xl border border-border/50 bg-card p-6 shadow-sm md:col-span-2"
+            className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm md:col-span-2"
           >
             <h2 className="text-xl font-semibold">Recent Performance</h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -703,10 +747,10 @@ export default function DashboardPage() {
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2, delay: 0.06 * index }}
-                      className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-3"
+                      className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/35 px-3 py-3"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-secondary-foreground">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-primary/25 bg-primary/90 text-sm font-semibold text-primary-foreground">
                           {item.score}
                         </span>
                         <span className="text-sm text-muted-foreground">
@@ -728,7 +772,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2 }}
-            className="rounded-xl border border-border/50 bg-card p-6 shadow-sm md:col-span-1"
+            className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm md:col-span-1"
           >
             <h3 className="text-lg font-semibold">Payout Center</h3>
 
@@ -754,10 +798,21 @@ export default function DashboardPage() {
                 ) : null}
               </div>
             ) : latestDraw ? (
-              <p className="mt-3 text-sm text-muted-foreground">
-                You didn't have a winning match this round. Your next 5 rounds
-                could be the lucky ones!
-              </p>
+              <div className="mt-3 space-y-3">
+                <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-3">
+                  <Image
+                    src="/empty.png"
+                    alt="No winning match"
+                    width={600}
+                    height={400}
+                    className="h-auto w-full rounded-lg object-contain"
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  You didn't have a winning match this round. Your next 5 rounds
+                  could be the lucky ones!
+                </p>
+              </div>
             ) : (
               <p className="mt-3 text-sm text-muted-foreground">
                 No official draw has been published yet.

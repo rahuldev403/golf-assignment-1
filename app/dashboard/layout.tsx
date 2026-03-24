@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { CreditCard, Heart, Home, LogOut, Menu, Target, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { createClient as createSupabaseClient } from "../../utils/supabase/client";
-import ThemeToggle from "../components/ThemeToggle";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -125,7 +124,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         <div className="border-t border-sidebar-border p-4 space-y-2">
-          <ThemeToggle className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-sm font-medium text-sidebar-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
           <button
             type="button"
             onClick={handleSignOut}
@@ -198,7 +196,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </nav>
 
               <div className="mt-4 border-t border-sidebar-border pt-4 space-y-2">
-                <ThemeToggle className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-sm font-medium text-sidebar-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
                 <button
                   type="button"
                   onClick={handleSignOut}

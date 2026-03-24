@@ -22,41 +22,81 @@ export default function CharityImpactCard({
 }: CharityImpactCardProps) {
   const resolvedCharityName = charityName ?? "Hope Foundation";
   const safePercent = Math.min(50, Math.max(10, contributionPercent));
+  const milestoneValues = [10, 20, 30, 40, 50];
 
   return (
-    <article className="overflow-hidden rounded-xl border border-border bg-card shadow-md">
-      <div className="grid grid-cols-1 md:grid-cols-[42%_58%]">
-        <div className="relative h-56 md:h-full">
+    <article className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-[40%_60%]">
+        <div className="relative h-56 lg:h-full">
           <img
             src={charityImageUrl || PLACEHOLDER_IMAGE}
             alt={resolvedCharityName}
-            className="h-full w-full object-cover md:rounded-l-xl"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-background/30 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-background/60 via-background/15 to-transparent" />
+          <div className="absolute bottom-4 left-4 rounded-full border border-white/40 bg-black/40 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+            Active Charity Partner
+          </div>
         </div>
 
-        <div className="p-6">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Charity Impact
-          </p>
-          <h3 className="mt-2 text-xl font-semibold">
-            You are currently funding {resolvedCharityName}.
-          </h3>
+        <div className="p-6 lg:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Charity Impact
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold leading-tight">
+                You are currently funding {resolvedCharityName}.
+              </h3>
+            </div>
+            <div className="rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-right">
+              <p className="text-xs text-muted-foreground">Contribution</p>
+              <p className="text-lg font-semibold text-primary">
+                {safePercent}%
+              </p>
+            </div>
+          </div>
 
           <p className="mt-2 text-sm text-muted-foreground">
             {charityDescription ||
               "Every score you submit pushes real support into causes that need it most. You are not just playing better, you are building impact."}
           </p>
 
-          <div className="mt-5">
-            <div className="mb-2 flex items-center justify-between text-sm">
+          <div className="mt-6 rounded-2xl border border-border/70 bg-background/60 p-4">
+            <div className="mb-3 flex items-center justify-between text-sm">
               <label
                 htmlFor="charity-impact-slider"
-                className="text-muted-foreground"
+                className="font-medium text-muted-foreground"
               >
                 Contribution Level
               </label>
-              <span className="font-semibold text-primary">{safePercent}%</span>
+              <span className="font-semibold text-primary">
+                {safePercent}% selected
+              </span>
+            </div>
+
+            <div className="pb-2">
+              <progress
+                value={safePercent - 10}
+                max={40}
+                aria-label="Contribution progress"
+                className="h-3 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-linear-to-r [&::-webkit-progress-value]:from-primary/70 [&::-webkit-progress-value]:via-primary [&::-webkit-progress-value]:to-chart-2 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-primary"
+              />
+
+              <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+                {milestoneValues.map((value) => (
+                  <span
+                    key={value}
+                    className={
+                      value <= safePercent
+                        ? "font-semibold text-foreground"
+                        : ""
+                    }
+                  >
+                    {value}%
+                  </span>
+                ))}
+              </div>
             </div>
 
             <input
@@ -69,12 +109,24 @@ export default function CharityImpactCard({
               onChange={(event) =>
                 onContributionChange(Number(event.target.value))
               }
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-primary"
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary"
             />
 
-            <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-              <span>10%</span>
-              <span>50%</span>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {milestoneValues.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onContributionChange(value)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                    value === safePercent
+                      ? "border-primary/60 bg-primary/15 text-primary"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  {value}%
+                </button>
+              ))}
             </div>
           </div>
 
@@ -82,7 +134,7 @@ export default function CharityImpactCard({
             type="button"
             onClick={onSave}
             disabled={isSaving}
-            className="mt-5 inline-flex items-center justify-center rounded-lg bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-5 inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSaving ? "Saving..." : "Save Contribution"}
           </button>
