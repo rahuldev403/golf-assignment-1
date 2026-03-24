@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { LockKeyhole, Mail, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { createClient as createSupabaseClient } from "../utils/supabase/client";
 
@@ -498,7 +499,7 @@ export default function Page() {
 
       {isAuthModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/75 px-4 backdrop-blur-md"
           onClick={closeAuthModal}
           role="presentation"
         >
@@ -506,11 +507,23 @@ export default function Page() {
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-full max-w-xl rounded-2xl border border-primary/25 bg-card/95 p-6 shadow-2xl shadow-primary/15"
+            className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-primary/35 bg-card/95 p-6 shadow-2xl shadow-primary/20"
             onClick={(event) => event.stopPropagation()}
           >
+            <div
+              className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-primary/20 blur-3xl"
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute -bottom-16 left-10 h-36 w-36 rounded-full bg-chart-2/15 blur-3xl"
+              aria-hidden="true"
+            />
+
             <div className="flex items-start justify-between gap-4">
               <div>
+                <div className="mb-3 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  Member Access
+                </div>
                 <h2 className="text-2xl font-semibold">
                   {mode === "signup" ? "Create Your Account" : "Welcome Back"}
                 </h2>
@@ -523,21 +536,21 @@ export default function Page() {
               <button
                 type="button"
                 onClick={closeAuthModal}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/70 text-muted-foreground transition hover:border-primary/45 hover:bg-muted"
                 aria-label="Close authentication modal"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 rounded-lg border border-border/70 bg-muted/40 p-1">
+            <div className="mt-5 grid grid-cols-2 rounded-xl border border-border/70 bg-muted/30 p-1">
               <button
                 type="button"
                 onClick={() => setMode("signin")}
-                className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                   mode === "signin"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Sign In
@@ -545,10 +558,10 @@ export default function Page() {
               <button
                 type="button"
                 onClick={() => setMode("signup")}
-                className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                   mode === "signup"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Create Account
@@ -566,14 +579,17 @@ export default function Page() {
                 <span className="mb-1 block text-sm text-muted-foreground">
                   Email
                 </span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition focus:border-ring"
-                  placeholder="you@example.com"
-                />
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                    className="w-full rounded-xl border border-input bg-background/80 py-2 pl-10 pr-3 text-sm outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+                    placeholder="you@example.com"
+                  />
+                </div>
               </label>
 
               <label className="block">
@@ -581,19 +597,20 @@ export default function Page() {
                   Password
                 </span>
                 <div className="relative">
+                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     required
                     minLength={6}
-                    className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-20 text-sm outline-none transition focus:border-ring"
+                    className="w-full rounded-xl border border-input bg-background/80 py-2 pl-10 pr-20 text-sm outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
                     placeholder="Minimum 6 characters"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((previous) => !previous)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-muted"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -603,7 +620,7 @@ export default function Page() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {authLoading
                   ? mode === "signin"
@@ -613,6 +630,10 @@ export default function Page() {
                     ? "Sign In"
                     : "Create Account"}
               </button>
+
+              <p className="text-center text-xs text-muted-foreground">
+                Protected authentication powered by secure session tokens.
+              </p>
             </form>
           </motion.section>
         </div>
