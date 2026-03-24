@@ -137,9 +137,7 @@ export default function AdminDashboardPage() {
         .from("users")
         .select("id, role, created_at")
         .order("created_at", { ascending: false }),
-      supabase
-        .from("subscriptions")
-        .select("user_id, status, plan_type"),
+      supabase.from("subscriptions").select("user_id, status, plan_type"),
     ]);
 
     if (usersRes.error) {
@@ -160,7 +158,10 @@ export default function AdminDashboardPage() {
       const subscription = row as SubscriptionRow;
       const existing = latestSubscriptionByUser.get(subscription.user_id);
 
-      if (!existing || (existing.status !== "active" && subscription.status === "active")) {
+      if (
+        !existing ||
+        (existing.status !== "active" && subscription.status === "active")
+      ) {
         latestSubscriptionByUser.set(subscription.user_id, subscription);
       }
     }
