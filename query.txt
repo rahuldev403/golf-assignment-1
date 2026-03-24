@@ -1,0 +1,259 @@
+-- Extensions
+create extension if not exists pgcrypto;
+
+-- =========================================================
+-- Tables
+-- =========================================================
+
+create table if not exists public.charities (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  image_url text
+);
+
+create table if not exists public.users (
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text not null default 'user' check (role in ('user', 'admin')),
+  stripe_customer_id text unique,
+  selected_charity_id uuid references public.charities(id) on delete set null,
+  charity_percentage numeric(5,2) not null default 10
+    check (charity_percentage >= 0 and charity_percentage <= 100),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.scores (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.users(id) on delete cascade,
+  score integer not null check (score between 1 and 45),
+  date_played date not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.users(id) on delete cascade,
+  status text not null check (status in ('active', 'inactive')),
+  plan_type text not null check (plan_type in ('monthly', 'yearly'))
+);
+
+create table if not exists public.draws (
+  id uuid primary key default gen_random_uuid(),
+  draw_date timestamptz not null,
+  status text not null check (status in ('simulated', 'published')),
+  winning_numbers integer[] not null check (cardinality(winning_numbers) > 0),
+  jackpot_amount numeric(12,2) not null check (jackpot_amount >= 0)
+);
+
+create table if not exists public.winners (
+  id uuid primary key default gen_random_uuid(),
+  draw_id uuid not null references public.draws(id) on delete cascade,
+  user_id uuid not null references public.users(id) on delete cascade,
+  match_type integer not null check (match_type in (3, 4, 5)),
+  prize_amount numeric(12,2) not null check (prize_amount >= 0),
+  proof_image_url text,
+  payment_status text not null check (payment_status in ('pending', 'paid'))
+);
+
+-- =========================================================
+-- Helpful indexes
+-- =========================================================
+
+create index if not exists idx_users_selected_charity_id on public.users(selected_charity_id);
+create index if not exists idx_scores_user_id on public.scores(user_id);
+create index if not exists idx_scores_date_played on public.scores(date_played);
+create index if not exists idx_subscriptions_user_id on public.subscriptions(user_id);
+create index if not exists idx_draws_draw_date on public.draws(draw_date);
+create index if not exists idx_winners_draw_id on public.winners(draw_id);
+create index if not exists idx_winners_user_id on public.winners(user_id);
+
+-- =========================================================
+-- Admin helper function
+-- SECURITY DEFINER allows this check to work reliably under RLS
+-- =========================================================
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.users u
+    where u.id = auth.uid()
+      and u.role = 'admin'
+  );
+$$;
+
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated;
+
+-- =========================================================
+-- Optional: auto-create public.users row on new auth user
+-- =========================================================
+
+create or replace function public.handle_new_auth_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.users (id, role)
+  values (new.id, 'user')
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+
+create trigger on_auth_user_created
+after insert on auth.users
+for each row
+execute function public.handle_new_auth_user();
+
+-- =========================================================
+-- Row Level Security
+-- =========================================================
+
+alter table public.users enable row level security;
+alter table public.scores enable row level security;
+alter table public.charities enable row level security;
+alter table public.subscriptions enable row level security;
+alter table public.draws enable row level security;
+alter table public.winners enable row level security;
+
+-- USERS: own row or admin
+drop policy if exists users_select_own_or_admin on public.users;
+create policy users_select_own_or_admin on public.users
+for select
+using (id = auth.uid() or public.is_admin());
+
+drop policy if exists users_insert_own_or_admin on public.users;
+create policy users_insert_own_or_admin on public.users
+for insert
+with check (id = auth.uid() or public.is_admin());
+
+drop policy if exists users_update_own_or_admin on public.users;
+create policy users_update_own_or_admin on public.users
+for update
+using (id = auth.uid() or public.is_admin())
+with check (id = auth.uid() or public.is_admin());
+
+drop policy if exists users_delete_own_or_admin on public.users;
+create policy users_delete_own_or_admin on public.users
+for delete
+using (id = auth.uid() or public.is_admin());
+
+-- SCORES: own rows or admin
+drop policy if exists scores_select_own_or_admin on public.scores;
+create policy scores_select_own_or_admin on public.scores
+for select
+using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists scores_insert_own_or_admin on public.scores;
+create policy scores_insert_own_or_admin on public.scores
+for insert
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists scores_update_own_or_admin on public.scores;
+create policy scores_update_own_or_admin on public.scores
+for update
+using (user_id = auth.uid() or public.is_admin())
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists scores_delete_own_or_admin on public.scores;
+create policy scores_delete_own_or_admin on public.scores
+for delete
+using (user_id = auth.uid() or public.is_admin());
+
+-- SUBSCRIPTIONS: own rows or admin
+drop policy if exists subscriptions_select_own_or_admin on public.subscriptions;
+create policy subscriptions_select_own_or_admin on public.subscriptions
+for select
+using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists subscriptions_insert_own_or_admin on public.subscriptions;
+create policy subscriptions_insert_own_or_admin on public.subscriptions
+for insert
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists subscriptions_update_own_or_admin on public.subscriptions;
+create policy subscriptions_update_own_or_admin on public.subscriptions
+for update
+using (user_id = auth.uid() or public.is_admin())
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists subscriptions_delete_own_or_admin on public.subscriptions;
+create policy subscriptions_delete_own_or_admin on public.subscriptions
+for delete
+using (user_id = auth.uid() or public.is_admin());
+
+-- WINNERS: own rows or admin
+drop policy if exists winners_select_own_or_admin on public.winners;
+create policy winners_select_own_or_admin on public.winners
+for select
+using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists winners_insert_own_or_admin on public.winners;
+create policy winners_insert_own_or_admin on public.winners
+for insert
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists winners_update_own_or_admin on public.winners;
+create policy winners_update_own_or_admin on public.winners
+for update
+using (user_id = auth.uid() or public.is_admin())
+with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists winners_delete_own_or_admin on public.winners;
+create policy winners_delete_own_or_admin on public.winners
+for delete
+using (user_id = auth.uid() or public.is_admin());
+
+-- CHARITIES: all authenticated users can read, only admins write
+drop policy if exists charities_select_authenticated on public.charities;
+create policy charities_select_authenticated on public.charities
+for select
+using (auth.role() = 'authenticated' or public.is_admin());
+
+drop policy if exists charities_admin_insert on public.charities;
+create policy charities_admin_insert on public.charities
+for insert
+with check (public.is_admin());
+
+drop policy if exists charities_admin_update on public.charities;
+create policy charities_admin_update on public.charities
+for update
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists charities_admin_delete on public.charities;
+create policy charities_admin_delete on public.charities
+for delete
+using (public.is_admin());
+
+-- DRAWS: all authenticated users can read, only admins write
+drop policy if exists draws_select_authenticated on public.draws;
+create policy draws_select_authenticated on public.draws
+for select
+using (auth.role() = 'authenticated' or public.is_admin());
+
+drop policy if exists draws_admin_insert on public.draws;
+create policy draws_admin_insert on public.draws
+for insert
+with check (public.is_admin());
+
+drop policy if exists draws_admin_update on public.draws;
+create policy draws_admin_update on public.draws
+for update
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists draws_admin_delete on public.draws;
+create policy draws_admin_delete on public.draws
+for delete
+using (public.is_admin());
