@@ -272,7 +272,9 @@ export default function Page() {
           throw new Error(error.message);
         }
 
-        if (!data.session) {
+        if (data.session && data.user) {
+          toast.success("Account created successfully.");
+        } else {
           toast.success(
             "Signup request accepted. If the email is valid, check inbox/spam for the verification link.",
           );
@@ -280,8 +282,6 @@ export default function Page() {
           setPassword("");
           return;
         }
-
-        toast.success("Account created successfully.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
@@ -399,10 +399,22 @@ export default function Page() {
       </section>
 
       {!isFeaturedLoading ? (
-        <section className="mx-auto w-full max-w-7xl px-6 py-16 md:px-10 lg:py-20">
+        <motion.section
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.2 }}
+          className="mx-auto w-full max-w-7xl px-6 py-16 md:px-10 lg:py-20"
+        >
           <div className="relative overflow-hidden rounded-4xl border border-primary/25 bg-linear-to-br from-primary/10 via-card to-background p-2">
             <div className="grid grid-cols-1 overflow-hidden rounded-[1.6rem] border border-border/50 bg-background/70 backdrop-blur-sm lg:grid-cols-2">
-              <div className="relative h-88 lg:h-full lg:min-h-120">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                className="relative h-88 lg:h-full lg:min-h-120"
+              >
                 <Image
                   src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&h=800&fit=crop"
                   alt="Featured charity supporting real-world impact"
@@ -412,41 +424,103 @@ export default function Page() {
                 />
 
                 <div className="absolute inset-0 bg-linear-to-r from-black/30 via-black/10 to-transparent" />
-              </div>
+              </motion.div>
 
-              <div className="relative flex items-center px-6 pb-8 pt-16 sm:px-8 lg:px-10 lg:py-12">
+              <motion.div
+                initial={{ opacity: 0, x: 24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+                viewport={{ once: true, amount: 0.5 }}
+                className="relative flex items-center px-6 pb-8 pt-16 sm:px-8 lg:px-10 lg:py-12"
+              >
                 <div className="absolute -left-16 top-12 hidden h-40 w-40 rounded-full bg-primary/25 blur-3xl lg:block" />
                 <div className="absolute bottom-8 right-8 hidden h-28 w-28 rounded-full border border-primary/25 bg-primary/10 backdrop-blur-sm lg:block" />
 
-                <div className="relative w-full rounded-2xl border border-border/40 bg-card/70 p-6 shadow-xl shadow-primary/10 backdrop-blur-md sm:p-7">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                    Featured Impact Partner
-                  </p>
-                  <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
-                    {featuredCharity?.name ?? "Spotlight Charity"}
-                  </h2>
-                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                    {featuredExcerpt}
-                  </p>
+                <div className="relative w-full space-y-4">
+                  <motion.p
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    className="text-xs font-semibold uppercase tracking-[0.2em] text-primary"
+                  >
+                    Spotlight Partner
+                  </motion.p>
 
-                  {featuredCharity ? (
-                    <Link
-                      href={`/charities/${featuredCharity.id}`}
-                      className="mt-7 inline-flex items-center justify-center rounded-xl bg-linear-to-r from-primary to-accent px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition hover:brightness-110"
-                    >
-                      Support {featuredCharity.name} Today
-                    </Link>
-                  ) : (
-                    <p className="mt-7 inline-flex rounded-xl border border-border/60 bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
-                      Featured charity will be announced shortly.
-                    </p>
-                  )}
+                  <motion.h2
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.35 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl"
+                  >
+                    {featuredCharity?.name ?? "Spotlight Charity"}
+                  </motion.h2>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    className="max-w-xl leading-relaxed text-muted-foreground sm:text-lg"
+                  >
+                    {featuredExcerpt}
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.45 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                  >
+                    {featuredCharity ? (
+                      <Link
+                        href={`/charities/${featuredCharity.id}`}
+                        className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-primary to-accent px-7 py-3 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-transform duration-200 hover:scale-[1.02] hover:brightness-110"
+                      >
+                        View Charity Profile
+                      </Link>
+                    ) : (
+                      <p className="inline-flex rounded-xl border border-border/60 bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
+                        Featured charity will be announced shortly.
+                      </p>
+                    )}
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </section>
+        </motion.section>
       ) : null}
+
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        viewport={{ once: true, amount: 0.3 }}
+        className="mx-auto w-full max-w-7xl px-6 py-12 md:px-10"
+      >
+        <div className="rounded-2xl border border-accent/40 bg-gradient-to-r from-accent/10 to-primary/5 p-6 shadow-sm">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Explore Our Impact Partners
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Browse verified charities and discover the causes aligned with
+                your values.
+              </p>
+            </div>
+            <Link
+              href="/charities"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
+            >
+              Browse Charities
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+      </motion.section>
 
       <section className="mx-auto w-full max-w-7xl px-6 py-16 md:px-10 lg:py-20">
         <motion.div

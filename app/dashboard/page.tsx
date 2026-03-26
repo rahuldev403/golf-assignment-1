@@ -563,6 +563,33 @@ function DashboardPageContent() {
         </div>
       </motion.div>
 
+      {/* Browse Charities Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="rounded-2xl border border-accent/40 bg-gradient-to-r from-accent/10 to-primary/5 p-6 shadow-sm"
+      >
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Explore Impact Partners
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Discover and select verified charities that align with your
+              values.
+            </p>
+          </div>
+          <Link
+            href="/charities"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
+          >
+            Browse Charities
+            <span>→</span>
+          </Link>
+        </div>
+      </motion.div>
+
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm">
           <ActiveDrawStatus

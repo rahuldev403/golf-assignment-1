@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Search, ArrowLeft } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CharitiesFooter } from "./components/charities-footer";
 import { createClient as createSupabaseClient } from "../../utils/supabase/client";
@@ -140,6 +141,15 @@ export default function CharityDirectoryPage() {
   return (
     <main className="min-h-screen bg-background px-4 py-10 text-foreground sm:px-6 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-8">
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary/80"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+        </div>
         <header className="rounded-2xl border border-primary/30 bg-linear-to-br from-primary/10 via-accent/10 to-card p-6 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/85">
             Public Charity Directory

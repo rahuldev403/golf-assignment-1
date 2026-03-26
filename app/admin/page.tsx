@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient as createSupabaseClient } from "../../utils/supabase/client";
 import DrawHistoryTable from "./components/DrawHistoryTable";
 import UserManagementTable from "./components/UserManagementTable";
+import CharityManagement from "./components/CharityManagement";
 
 type UserRow = {
   id: string;
@@ -74,17 +75,29 @@ type DrawSimulationResult = {
   summary: DrawSimulationSummary;
 };
 
+type Charity = {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string | null;
+  is_featured: boolean;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export default function AdminDashboardPage() {
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "draws">(
-    "overview",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "users" | "draws" | "charities"
+  >("overview");
   const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [users, setUsers] = useState<UserRow[]>([]);
   const [draws, setDraws] = useState<DrawRow[]>([]);
+  const [charities, setCharities] = useState<Charity[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedUserScores, setSelectedUserScores] = useState<ScoreRow[]>([]);
   const [loadingScoresForUser, setLoadingScoresForUser] = useState<
@@ -149,6 +162,7 @@ export default function AdminDashboardPage() {
       details?: string;
       users?: UserRow[];
       draws?: DrawRow[];
+      charities?: Charity[];
     };
 
     if (!response.ok || !payload.success) {
@@ -160,9 +174,11 @@ export default function AdminDashboardPage() {
 
     const usersData = payload.users ?? [];
     const drawsData = payload.draws ?? [];
+    const charitiesData = payload.charities ?? [];
 
     setUsers(usersData);
     setDraws(drawsData);
+    setCharities(charitiesData);
     setLatestDraw(drawsData[0] ?? null);
   };
 
@@ -487,6 +503,7 @@ export default function AdminDashboardPage() {
                 { key: "overview" as const, label: "Control Center" },
                 { key: "users" as const, label: "Manage Users" },
                 { key: "draws" as const, label: "Draw History" },
+                { key: "charities" as const, label: "Manage Charities" },
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -840,6 +857,18 @@ export default function AdminDashboardPage() {
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <DrawHistoryTable draws={draws} />
+            </motion.section>
+          ) : null}
+
+          {activeTab === "charities" ? (
+            <motion.section
+              key="charities"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <CharityManagement initialCharities={charities} />
             </motion.section>
           ) : null}
         </AnimatePresence>

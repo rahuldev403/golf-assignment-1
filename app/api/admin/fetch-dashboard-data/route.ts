@@ -145,11 +145,25 @@ export async function GET(request: Request) {
       return jsonError("Failed to fetch draws data.", 500, drawsError.message);
     }
 
+    const { data: charities, error: charitiesError } = await serviceDb
+      .from("charities")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (charitiesError) {
+      return jsonError(
+        "Failed to fetch charities data.",
+        500,
+        charitiesError.message,
+      );
+    }
+
     return NextResponse.json(
       {
         success: true,
         users,
         draws: draws ?? [],
+        charities: charities ?? [],
       },
       { status: 200 },
     );
